@@ -1,0 +1,16 @@
+
+<AppFrame>:
+    orientation: 'vertical'
+    BoxLayout:
+        id: menu
+        size_hint_y: .1
+        Button:
+            text: 'File'
+            size_hint_x: .1
+        FloatLayout:
+    GridLayout:
+        id: btn_layout
+        Keybind:
+            bound_keys: ['z']
+            text: 'Z'
+            on_press: self.send()
