@@ -6,10 +6,12 @@
 
 <NewBindDialogue>:
     bind_input: bind_input
+    tab_back_box: tab_back_box
+    tab_back: tab_back_box.active
     anchor_y: 'center'
     anchor_x: 'center'
     BoxLayout:
-        size_hint: (.4, .25)
+        size_hint: (.4, .5)
         padding: 10
         spacing: 5
         orientation: 'vertical'
@@ -20,33 +22,33 @@
                 size: self.size
                 pos: self.pos
         Label:
-            size_hint_y: .3
+            size_hint_y: .2
             text: 'Add New Keybinding'
         BoxLayout:
+            orientation: 'vertical'
             spacing: 5
+            size_hint_y: .6
+            Label:
+                text: 'Binding:'
+            TextInput:
+                id: bind_input
+                on_text: root.update_bind(self.text)
             BoxLayout:
-                orientation: 'vertical'
-                Label:
-                    text: 'Binding:'
-                TextInput:
-                    id: bind_input
-                    on_text: root.update_bind(self.text)
-            BoxLayout:
-                orientation: 'vertical'
-                size_hint_x: .4
                 Label:
                     text: 'Alt+Tab Back?'
                 AnchorLayout:
                     anchor_x: 'center'
                     anchor_y: 'center'
                     CheckBox:
+                        id: tab_back_box
         Label:
             id: error_msg
+            size_hint_y: .2
             text: ''
             text_color: [1, 0, 0, 1]
         BoxLayout:
-            size_hint_y: .3
             spacing: 3
+            size_hint_y: .2
             Button:
                 text: 'Done'
                 on_press: root.commit()

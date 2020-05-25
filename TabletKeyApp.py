@@ -2,7 +2,8 @@ import time
 
 import pyautogui as pg
 from kivy.app import App
-from kivy.properties import (ListProperty, BooleanProperty, ObjectProperty, StringProperty)
+from kivy.properties import (
+    ListProperty, BooleanProperty, ObjectProperty, StringProperty)
 from kivy.uix.anchorlayout import AnchorLayout
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.button import Button
@@ -26,13 +27,11 @@ class Keybind(Button):
             time.sleep(0.1)
             pg.hotkey('alt', 'tab')
 
-    def on_bound_key_text(self, *args):
-        self.text = self.bound_key_text
-
 
 class NewBindDialogue(AnchorLayout):
     bind_input = ObjectProperty(None)
     bind_text = StringProperty('')
+    tab_back = BooleanProperty(False)
 
     def update_bind(self, text: str = ''):
         self.bind_text = text
