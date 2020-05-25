@@ -57,6 +57,35 @@
                 on_press: root.cancel()
 
 
+<SaveBindSet>:
+    name_input: name_input
+    anchor_y: 'center'
+    anchor_x: 'center'
+    BoxLayout:
+        size_hint: (.4, .3)
+        orientation: 'vertical'
+        padding: 10
+        spacing: 5
+        canvas:
+            Color:
+                rgba: [72/255, 82/255, 99/255, 1]
+            Rectangle:
+                size: self.size
+                pos: self.pos
+        Label:
+            text: 'File Name:'
+        TextInput:
+            id: name_input
+        BoxLayout:
+            spacing: 5
+            Button:
+                text: 'Save'
+                on_press: root.commit()
+            Button:
+                text: 'Cancel'
+                on_press: root.cancel()
+
+
 <AppFrame>:
     btn_layout: btn_layout
     BoxLayout:
@@ -65,8 +94,9 @@
             id: menu
             size_hint_y: .1
             Button:
-                text: 'File'
+                text: 'Save'
                 size_hint_x: .1
+                on_press: root.new_save_dialogue()
             Button:
                 size_hint_x: .25
                 text: 'New Keybind'
