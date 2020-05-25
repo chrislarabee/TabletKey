@@ -1,16 +1,77 @@
+<Keybind>:
+    text: self.bound_key_text
+    on_press: self.send()
+    size_hint: (.1, .1)
+
+
+<NewBindDialogue>:
+    bind_input: bind_input
+    anchor_y: 'center'
+    anchor_x: 'center'
+    BoxLayout:
+        size_hint: (.4, .25)
+        padding: 10
+        spacing: 5
+        orientation: 'vertical'
+        canvas:
+            Color:
+                rgba: [72/255, 82/255, 99/255, 1]
+            Rectangle:
+                size: self.size
+                pos: self.pos
+        Label:
+            size_hint_y: .3
+            text: 'Add New Keybinding'
+        BoxLayout:
+            spacing: 5
+            BoxLayout:
+                orientation: 'vertical'
+                Label:
+                    text: 'Binding:'
+                TextInput:
+                    id: bind_input
+                    on_text: root.update_bind(self.text)
+            BoxLayout:
+                orientation: 'vertical'
+                size_hint_x: .4
+                Label:
+                    text: 'Alt+Tab Back?'
+                AnchorLayout:
+                    anchor_x: 'center'
+                    anchor_y: 'center'
+                    CheckBox:
+        Label:
+            id: error_msg
+            text: ''
+            text_color: [1, 0, 0, 1]
+        BoxLayout:
+            size_hint_y: .3
+            spacing: 3
+            Button:
+                text: 'Done'
+                on_press: root.commit()
+            Button:
+                text: 'Cancel'
+                on_press: root.cancel()
+
 
 <AppFrame>:
-    orientation: 'vertical'
+    btn_layout: btn_layout
     BoxLayout:
-        id: menu
-        size_hint_y: .1
-        Button:
-            text: 'File'
-            size_hint_x: .1
-        FloatLayout:
-    GridLayout:
-        id: btn_layout
-        Keybind:
-            bound_keys: ['z']
-            text: 'Z'
-            on_press: self.send()
+        orientation: 'vertical'
+        BoxLayout:
+            id: menu
+            size_hint_y: .1
+            Button:
+                text: 'File'
+                size_hint_x: .1
+            Button:
+                size_hint_x: .25
+                text: 'New Keybind'
+                on_press: root.new_keybind_dialogue()
+            FloatLayout:
+        GridLayout:
+            id: btn_layout
+            cols: 5
+
+
