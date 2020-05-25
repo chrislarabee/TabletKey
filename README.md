@@ -16,3 +16,13 @@ Then install requirements with:
 ```
 pip install -r requirements.txt
 ```
+
+
+## Use
+
+Once TabletKey is running, simply switch to the window you want to use
+the program to send inputs to and switch back to TabletKey whenever 
+you want to press a button.
+
+It is recommended that you use a hotkey on your tablet to Alt + Tab for 
+maximum efficiency.
