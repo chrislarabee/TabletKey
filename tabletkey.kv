@@ -57,7 +57,7 @@
                 on_press: root.cancel()
 
 
-<SaveBindSet>:
+<NameBindSet>:
     name_input: name_input
     anchor_y: 'center'
     anchor_x: 'center'
@@ -79,7 +79,7 @@
         BoxLayout:
             spacing: 5
             Button:
-                text: 'Save'
+                text: root.mode
                 on_press: root.commit()
             Button:
                 text: 'Cancel'
@@ -96,7 +96,11 @@
             Button:
                 text: 'Save'
                 size_hint_x: .1
-                on_press: root.new_save_dialogue()
+                on_press: root.new_bindset_dialogue()
+            Button:
+                text: 'Load'
+                size_hint_x: .1
+                on_press: root.new_bindset_dialogue('Load')
             Button:
                 size_hint_x: .25
                 text: 'New Keybind'

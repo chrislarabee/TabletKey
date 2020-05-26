@@ -17,7 +17,6 @@ class Keybind(Button):
 
     def output(self):
         return dict(
-            bound_keys=self.bound_keys,
             tab_back=self.tab_back
         )
 
@@ -52,14 +51,18 @@ class NewBindDialogue(AnchorLayout):
         self.parent.remove_widget(self)
 
 
-class SaveBindSet(AnchorLayout):
+class NameBindSet(AnchorLayout):
     name_input = ObjectProperty(None)
+    mode = StringProperty('Save')
 
     def cancel(self):
         self.parent.remove_widget(self)
 
     def commit(self):
-        self.parent.save(self.name_input.text)
+        if self.mode == 'Load':
+            self.parent.load(self.name_input.text)
+        else:
+            self.parent.save(self.name_input.text)
         self.parent.remove_widget(self)
 
 
@@ -71,8 +74,8 @@ class AppFrame(FloatLayout):
         nbd = NewBindDialogue()
         self.add_widget(nbd)
 
-    def new_save_dialogue(self):
-        sbs = SaveBindSet()
+    def new_bindset_dialogue(self, mode: str = 'Save'):
+        sbs = NameBindSet(mode=mode)
         self.add_widget(sbs)
 
     def update_keybind(self, bind_text: str, **options):
@@ -90,6 +93,18 @@ class AppFrame(FloatLayout):
             result[k] = {**v.output()}
         with open(f'bindsets/{file_name}.json', 'w') as w:
             w.write(json.dumps(result))
+
+    def load(self, file_name: str):
+        with open(f'bindsets/{file_name}.json', 'r') as r:
+            for line in r:
+                result = json.loads(line)
+            for k, v in result.items():
+                b = Keybind()
+                b.setup(k, **v)
+                self.keybindings[k] = b
+                self.btn_layout.add_widget(b)
+
+
 
 
 class TabletKeyApp(App):
