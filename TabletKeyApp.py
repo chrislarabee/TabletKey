@@ -11,20 +11,19 @@ from kivy.uix.floatlayout import FloatLayout
 
 
 class Keybind(Button):
-    bound_key_text = kp.StringProperty('')
     bound_keys = kp.ListProperty([])
     tab_back = kp.BooleanProperty(False)
 
     def output(self):
         return dict(
+            binding=self.bound_key_text,
             tab_back=self.tab_back
         )
 
-    def setup(self, binding: str, **options):
-        self.bound_key_text = binding
+    def setup(self, name: str, binding: str, tab_back: bool = False):
         self.bound_keys = binding.split('+')
-        self.tab_back = options.get('tab_back', False)
-        self.text = '+'.join([b.capitalize() for b in self.bound_keys])
+        self.tab_back = tab_back
+        self.text = name
 
     def send(self):
         pg.hotkey('alt', 'tab')
@@ -36,18 +35,21 @@ class Keybind(Button):
 
 
 class NewBindDialogue(AnchorLayout):
-    bind_input = kp.ObjectProperty(None)
-    bind_text = kp.StringProperty('')
-    tab_back = kp.BooleanProperty(False)
+    name = kp.StringProperty('')
+    binding_props = dict(
+        binding='',
+        tab_back=False,
+    )
 
-    def update_bind(self, text: str = ''):
-        self.bind_text = text
+    def update_binding_props(self, **props):
+        for k, v in props.items():
+            self.binding_props[k] = v
 
     def cancel(self):
         self.parent.remove_widget(self)
 
     def commit(self):
-        self.parent.update_keybind(self.bind_text, **self.__dict__)
+        self.parent.update_keybind(**self.binding_props)
         self.parent.remove_widget(self)
 
 
@@ -79,13 +81,14 @@ class AppFrame(FloatLayout):
         sbs = NameBindSet(mode=mode)
         self.add_widget(sbs)
 
-    def update_keybind(self, bind_text: str, **options):
-        if self.keybindings.get(bind_text):
-            self.keybindings[bind_text].setup(bind_text, **options)
+    def update_keybind(self, **options):
+        bind_name = options.get('name')
+        if self.keybindings.get(bind_name):
+            self.keybindings[bind_name].setup(**options)
         else:
             new_btn = Keybind()
-            new_btn.setup(bind_text, **options)
-            self.keybindings[bind_text] = new_btn
+            new_btn.setup(**options)
+            self.keybindings[bind_name] = new_btn
             self.btn_layout.add_widget(new_btn)
 
     @staticmethod

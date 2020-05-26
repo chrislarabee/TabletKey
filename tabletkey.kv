@@ -1,11 +1,9 @@
 <Keybind>:
-    text: self.bound_key_text
     on_press: self.send()
     size_hint: (.1, .1)
 
 
 <NewBindDialogue>:
-    bind_input: bind_input
     tab_back_box: tab_back_box
     tab_back: tab_back_box.active
     anchor_y: 'center'
@@ -29,10 +27,13 @@
             spacing: 5
             size_hint_y: .6
             Label:
+                text: 'Name'
+            TextInput:
+                on_text: root.update_binding_props(name=self.text)
+            Label:
                 text: 'Binding:'
             TextInput:
-                id: bind_input
-                on_text: root.update_bind(self.text)
+                on_text: root.update_binding_props(binding=self.text)
             BoxLayout:
                 Label:
                     text: 'Alt+Tab Back?'
