@@ -2,36 +2,41 @@
     on_press: self.send()
     size_hint: (.1, .1)
 
+<InputWindowBox@BoxLayout>:
+    size_hint_x: .4
+    padding: 10
+    spacing: 5
+    orientation: 'vertical'
+    canvas:
+        Color:
+            rgba: [72/255, 82/255, 99/255, 1]
+        Rectangle:
+            size: self.size
+            pos: self.pos
 
-<NewBindDialogue>:
+
+<NewBinding>:
     tab_back_box: tab_back_box
     tab_back: tab_back_box.active
-    anchor_y: 'center'
     anchor_x: 'center'
-    BoxLayout:
-        size_hint: (.4, .5)
-        padding: 10
-        spacing: 5
-        orientation: 'vertical'
-        canvas:
-            Color:
-                rgba: [72/255, 82/255, 99/255, 1]
-            Rectangle:
-                size: self.size
-                pos: self.pos
+    anchor_y: 'center'
+    InputWindowBox:
+        size_hint_y: .4
         Label:
-            size_hint_y: .2
+            size_hint_y: .1
             text: 'Add New Keybinding'
         BoxLayout:
             orientation: 'vertical'
             spacing: 5
-            size_hint_y: .6
+            size_hint_y: .7
             Label:
                 text: 'Name'
+                size_hint_y: .25
             TextInput:
                 on_text: root.update_binding_props(name=self.text)
             Label:
                 text: 'Binding:'
+                size_hint_y: .25
             TextInput:
                 on_text: root.update_binding_props(binding=self.text)
             BoxLayout:
@@ -42,11 +47,6 @@
                     anchor_y: 'center'
                     CheckBox:
                         id: tab_back_box
-        Label:
-            id: error_msg
-            size_hint_y: .2
-            text: ''
-            text_color: [1, 0, 0, 1]
         BoxLayout:
             spacing: 3
             size_hint_y: .2
@@ -62,17 +62,8 @@
     name_input: name_input
     anchor_y: 'center'
     anchor_x: 'center'
-    BoxLayout:
-        size_hint: (.4, .3)
-        orientation: 'vertical'
-        padding: 10
-        spacing: 5
-        canvas:
-            Color:
-                rgba: [72/255, 82/255, 99/255, 1]
-            Rectangle:
-                size: self.size
-                pos: self.pos
+    InputWindowBox:
+        size_hint_y: .3
         Label:
             text: 'File Name:'
         TextInput:
@@ -97,11 +88,11 @@
             Button:
                 text: 'Save'
                 size_hint_x: .1
-                on_press: root.new_bindset_dialogue()
+                on_press: root.name_bindset_dialogue()
             Button:
                 text: 'Load'
                 size_hint_x: .1
-                on_press: root.new_bindset_dialogue('Load')
+                on_press: root.name_bindset_dialogue('Load')
             Button:
                 size_hint_x: .25
                 text: 'New Keybind'
