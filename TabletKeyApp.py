@@ -4,18 +4,16 @@ import time
 
 import pyautogui as pg
 from kivy.app import App
-from kivy.properties import (
-    ListProperty, BooleanProperty, ObjectProperty, StringProperty, DictProperty)
+import kivy.properties as kp
 from kivy.uix.anchorlayout import AnchorLayout
 from kivy.uix.button import Button
 from kivy.uix.floatlayout import FloatLayout
-from pandas.core.window import Window
 
 
 class Keybind(Button):
-    bound_key_text = StringProperty('')
-    bound_keys = ListProperty([])
-    tab_back = BooleanProperty(False)
+    bound_key_text = kp.StringProperty('')
+    bound_keys = kp.ListProperty([])
+    tab_back = kp.BooleanProperty(False)
 
     def output(self):
         return dict(
@@ -38,9 +36,9 @@ class Keybind(Button):
 
 
 class NewBindDialogue(AnchorLayout):
-    bind_input = ObjectProperty(None)
-    bind_text = StringProperty('')
-    tab_back = BooleanProperty(False)
+    bind_input = kp.ObjectProperty(None)
+    bind_text = kp.StringProperty('')
+    tab_back = kp.BooleanProperty(False)
 
     def update_bind(self, text: str = ''):
         self.bind_text = text
@@ -54,8 +52,8 @@ class NewBindDialogue(AnchorLayout):
 
 
 class NameBindSet(AnchorLayout):
-    name_input = ObjectProperty(None)
-    mode = StringProperty('Save')
+    name_input = kp.ObjectProperty(None)
+    mode = kp.StringProperty('Save')
 
     def cancel(self):
         self.parent.remove_widget(self)
@@ -69,9 +67,9 @@ class NameBindSet(AnchorLayout):
 
 
 class AppFrame(FloatLayout):
-    btn_layout = ObjectProperty(None)
-    keybindings = DictProperty({})
-    config = DictProperty({})
+    btn_layout = kp.ObjectProperty(None)
+    keybindings = kp.DictProperty({})
+    config = kp.DictProperty({})
 
     def new_keybind_dialogue(self):
         nbd = NewBindDialogue()
@@ -97,10 +95,13 @@ class AppFrame(FloatLayout):
 
     @staticmethod
     def from_json(file_path: str):
-        with open(file_path, 'r') as r:
-            for line in r:
-                result = json.loads(line)
-        return result
+        if os.path.exists(file_path):
+            with open(file_path, 'r') as r:
+                for line in r:
+                    result = json.loads(line)
+            return result
+        else:
+            return dict()
 
     def save(self, file_name: str):
         result = dict()
@@ -108,6 +109,9 @@ class AppFrame(FloatLayout):
             result[k] = {**v.output()}
         self.to_json(f'bindsets/{file_name}.json', result)
         self.config['last_bindset'] = file_name
+        self.save_config()
+
+    def save_config(self):
         self.to_json('ref.json', self.config)
 
     def load(self, file_name: str):
@@ -125,27 +129,38 @@ class AppFrame(FloatLayout):
 
 
 class TabletKeyApp(App):
-    app = ObjectProperty(None)
+    app = kp.ObjectProperty(None)
 
     def build(self):
         self.app = AppFrame()
         return self.app
 
+    def load_last_bset(self, bset_name: str):
+        print(f'Attempting to load the last used bindset {bset_name}...')
+        load_result = self.app.load(bset_name)
+        if load_result:
+            print(f'Load of {bset_name}.json successful.')
+        else:
+            self.app.config.pop('last_bindset')
+            self.app.save_config()
+            print(f'Load failed. bindsets/{bset_name}.json no '
+                  f'longer exists.')
+
+    @staticmethod
+    def setup_basics():
+        if not os.path.exists('bindsets/'):
+            os.mkdir('bindsets')
+
     def on_start(self):
+        self.setup_basics()
         self.root_window.borderless = True
         print('Performing TabletKey startup...')
         result = self.app.from_json('ref.json')
         for k, v in result.items():
             self.app.config[k] = v
         last_bset = self.app.config.get('last_bindset')
-        print(f'Attempting to load the last used bindset {last_bset}...')
         if last_bset:
-            load_result = self.app.load(last_bset)
-            if load_result:
-                print(f'Load of {last_bset}.json successful.')
-            else:
-                print(f'Load failed. bindsets/{last_bset}.json no '
-                      f'longer exists.')
+            self.load_last_bset(last_bset)
 
 
 if __name__ == '__main__':
