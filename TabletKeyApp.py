@@ -17,6 +17,7 @@ class Keybind(Button):
     """
     bound_keys = kp.ListProperty([])
     tab_back = kp.BooleanProperty(False)
+    position = kp.ListProperty([0, 0])
 
     def output(self) -> dict:
         """
@@ -29,7 +30,8 @@ class Keybind(Button):
             tab_back=self.tab_back
         )
 
-    def setup(self, name: str, binding: str, tab_back: bool = False) -> None:
+    def setup(self, name: str, binding: str, position: (list, tuple) = None,
+              tab_back: bool = False) -> None:
         """
         Sets a Keybind button up, or overwrites the existing properties
         if used on an existing Keybind object.
@@ -38,6 +40,9 @@ class Keybind(Button):
             to display on the button.
         :param binding: A string with each keyboard key separated by a
             plus (+) sign.
+        :param position: A list or tuple, currently mostly a
+            placeholder for when user-specified Keybind button
+            placement is implemented.
         :param tab_back: A boolean, indicates whether, when this
             Keybind is pressed, the user wants to immediately tab back
             to the TabletKeyApp window.
@@ -45,6 +50,7 @@ class Keybind(Button):
         """
         self.bound_keys = binding.split('+')
         self.tab_back = tab_back
+        self.position = position if position is not None else [0, 0]
         self.text = name
 
     def send(self) -> None:
