@@ -1,4 +1,5 @@
 import json
+import os
 import time
 
 import pyautogui as pg
@@ -8,6 +9,7 @@ from kivy.properties import (
 from kivy.uix.anchorlayout import AnchorLayout
 from kivy.uix.button import Button
 from kivy.uix.floatlayout import FloatLayout
+from pandas.core.window import Window
 
 
 class Keybind(Button):
@@ -69,6 +71,7 @@ class NameBindSet(AnchorLayout):
 class AppFrame(FloatLayout):
     btn_layout = ObjectProperty(None)
     keybindings = DictProperty({})
+    config = DictProperty({})
 
     def new_keybind_dialogue(self):
         nbd = NewBindDialogue()
@@ -87,29 +90,62 @@ class AppFrame(FloatLayout):
             self.keybindings[bind_text] = new_btn
             self.btn_layout.add_widget(new_btn)
 
+    @staticmethod
+    def to_json(file_path: str, data: dict):
+        with open(file_path, 'w') as w:
+            w.write(json.dumps(data))
+
+    @staticmethod
+    def from_json(file_path: str):
+        with open(file_path, 'r') as r:
+            for line in r:
+                result = json.loads(line)
+        return result
+
     def save(self, file_name: str):
         result = dict()
         for k, v in self.keybindings.items():
             result[k] = {**v.output()}
-        with open(f'bindsets/{file_name}.json', 'w') as w:
-            w.write(json.dumps(result))
+        self.to_json(f'bindsets/{file_name}.json', result)
+        self.config['last_bindset'] = file_name
+        self.to_json('ref.json', self.config)
 
     def load(self, file_name: str):
-        with open(f'bindsets/{file_name}.json', 'r') as r:
-            for line in r:
-                result = json.loads(line)
+        p = f'bindsets/{file_name}.json'
+        if os.path.exists(p):
+            result = self.from_json(p)
             for k, v in result.items():
                 b = Keybind()
                 b.setup(k, **v)
                 self.keybindings[k] = b
                 self.btn_layout.add_widget(b)
-
-
+            return True
+        else:
+            return False
 
 
 class TabletKeyApp(App):
+    app = ObjectProperty(None)
+
     def build(self):
-        return AppFrame()
+        self.app = AppFrame()
+        return self.app
+
+    def on_start(self):
+        self.root_window.borderless = True
+        print('Performing TabletKey startup...')
+        result = self.app.from_json('ref.json')
+        for k, v in result.items():
+            self.app.config[k] = v
+        last_bset = self.app.config.get('last_bindset')
+        print(f'Attempting to load the last used bindset {last_bset}...')
+        if last_bset:
+            load_result = self.app.load(last_bset)
+            if load_result:
+                print(f'Load of {last_bset}.json successful.')
+            else:
+                print(f'Load failed. bindsets/{last_bset}.json no '
+                      f'longer exists.')
 
 
 if __name__ == '__main__':
