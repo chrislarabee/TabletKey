@@ -26,6 +26,7 @@ class Keybind(Button):
             of the Keybind so that they can be saved.
         """
         return dict(
+            position=self.pos,
             binding='+'.join(self.bound_keys),
             tab_back=self.tab_back
         )
